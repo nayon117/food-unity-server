@@ -30,12 +30,31 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const foodCollection = client.db("food-unity").collection("foods");
+
+    app.get('/first-six', async (req, res) => {
+     try {
+      const result = await foodCollection.find().limit(6).toArray();
+      res.send(result);
+     } catch (error) {
+      console.log(error);
+     }
+    })
+
+    app.get('/foods', async (req, res) => { 
+    try {
+      const result = await foodCollection.find().toArray();
+      res.send(result);
+    } catch (error) {
+      console.log(error);
+    }
+    })
 
 
 
 
 
-    
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
