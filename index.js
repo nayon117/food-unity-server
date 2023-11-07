@@ -80,7 +80,18 @@ async function run() {
       }
     });
 
-    // post method
+    // post method for foodCollection
+    app.post("/foods", async (req, res) => {
+     try {
+      const foodData = req.body;
+      const result = await foodCollection.insertOne(foodData);
+      res.send(result);
+     } catch (error) {
+      console.log(error);
+     }
+    });
+
+    // post method for request collection
     app.post("/requests", async (req, res) => {
       const requestData = req.body;
       const result = await requestCollection.insertOne(requestData);
