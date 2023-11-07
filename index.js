@@ -2,11 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(express());
+app.use(express.json());
 app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.3hdabzk.mongodb.net/?retryWrites=true&w=majority`;
@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
 
     const foodCollection = client.db("food-unity").collection("foods");
+    const requestCollection = client.db("food-unity").collection("requests");
 
     app.get("/first-six", async (req, res) => {
       try {
@@ -53,6 +54,33 @@ async function run() {
       } catch (error) {
         console.log(error);
       }
+    });
+
+    app.get("/foods/:id", async (req, res) => {
+      try {
+        const id = req.params.id;
+        const result = await foodCollection.findOne({ _id: new ObjectId(id) });
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    // post method
+    // app.post('/requests', async (req, res) => {
+    //   try {
+    //     const requestData = req.body;
+    //     const result = await requestCollection.insertOne(requestData)
+    //     res.send(result);
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // })
+    app.post("/requests", async (req, res) => {
+      const requestData = req.body;
+      console.log(requestData);
+      const result = await requestCollection.insertOne(requestData);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
