@@ -43,8 +43,14 @@ async function run() {
     app.get("/foods", async (req, res) => {
       try {
         const sort = req.query.sort === "desc" ? -1 : 1;
+        console.log(req.query.email);
+        let query = {};
+        if (req.query?.email) {
+          query = { email: req.query.email };
+        }
+
         const result = await foodCollection
-          .find()
+          .find(query)
           .sort({ expiredDateTime: sort === 1 ? 1 : -1 })
           .toArray();
         // Parse the date strings to Date objects
@@ -73,7 +79,12 @@ async function run() {
     // get all requests data
     app.get("/requests", async (req, res) => {
       try {
-        const result = await requestCollection.find().toArray();
+        // console.log(req.query);
+        let query = {};
+        if (req.query?.email) {
+          query = { email: req.query.email };
+        }
+        const result = await requestCollection.find(query).toArray();
         res.send(result);
       } catch (error) {
         console.log(error);
@@ -82,13 +93,13 @@ async function run() {
 
     // post method for foodCollection
     app.post("/foods", async (req, res) => {
-     try {
-      const foodData = req.body;
-      const result = await foodCollection.insertOne(foodData);
-      res.send(result);
-     } catch (error) {
-      console.log(error);
-     }
+      try {
+        const foodData = req.body;
+        const result = await foodCollection.insertOne(foodData);
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
     });
 
     // post method for request collection
