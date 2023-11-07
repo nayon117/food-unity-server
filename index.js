@@ -43,7 +43,7 @@ async function run() {
     app.get("/foods", async (req, res) => {
       try {
         const sort = req.query.sort === "desc" ? -1 : 1;
-        console.log(req.query.email);
+
         let query = {};
         if (req.query?.email) {
           query = { email: req.query.email };
@@ -79,7 +79,6 @@ async function run() {
     // get all requests data
     app.get("/requests", async (req, res) => {
       try {
-        // console.log(req.query);
         let query = {};
         if (req.query?.email) {
           query = { email: req.query.email };
@@ -106,6 +105,37 @@ async function run() {
     app.post("/requests", async (req, res) => {
       const requestData = req.body;
       const result = await requestCollection.insertOne(requestData);
+      res.send(result);
+    });
+
+    // update method
+
+    //  find id for update
+    app.get("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateData = req.body;
+
+      const data = {
+        $set: {
+          foodName: updateData.foodName,
+          foodImage: updateData.foodImage,
+          foodQuantity: updateData.foodQuantity,
+          pickupLocation: updateData.pickupLocation,
+          expiredDateTime: updateData.expiredDateTime,
+          foodStatus: updateData.foodStatus,
+        },
+      };
+
+      const result = await foodCollection.updateOne(filter, data, options);
       res.send(result);
     });
 
