@@ -25,9 +25,11 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    // collection
     const foodCollection = client.db("food-unity").collection("foods");
     const requestCollection = client.db("food-unity").collection("requests");
 
+    // show first six data using limit
     app.get("/first-six", async (req, res) => {
       try {
         const result = await foodCollection.find().limit(6).toArray();
@@ -37,6 +39,7 @@ async function run() {
       }
     });
 
+    // get all foods data
     app.get("/foods", async (req, res) => {
       try {
         const sort = req.query.sort === "desc" ? -1 : 1;
@@ -56,6 +59,7 @@ async function run() {
       }
     });
 
+    // single food specific data
     app.get("/foods/:id", async (req, res) => {
       try {
         const id = req.params.id;
@@ -66,20 +70,29 @@ async function run() {
       }
     });
 
+    // get all requests data
+    app.get("/requests", async (req, res) => {
+      try {
+        const result = await requestCollection.find().toArray();
+        res.send(result);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
     // post method
-    // app.post('/requests', async (req, res) => {
-    //   try {
-    //     const requestData = req.body;
-    //     const result = await requestCollection.insertOne(requestData)
-    //     res.send(result);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // })
     app.post("/requests", async (req, res) => {
       const requestData = req.body;
-      console.log(requestData);
       const result = await requestCollection.insertOne(requestData);
+      res.send(result);
+    });
+
+    // delete method
+    app.delete("/requests/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await requestCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
       res.send(result);
     });
 
