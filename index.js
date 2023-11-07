@@ -118,6 +118,15 @@ async function run() {
       res.send(result);
     });
 
+    // delete method for foods
+    app.delete("/foods/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await foodCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
