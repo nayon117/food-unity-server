@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const app = express();
 require("dotenv").config();
@@ -11,9 +11,9 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      // "http://localhost:5173",
-      "https://food-unity-client.web.app",
-      "https://food-unity-client.firebaseapp.com"
+      "http://localhost:5173",
+      // "https://food-unity-client.web.app",
+      // "https://food-unity-client.firebaseapp.com"
     ],
     credentials: true,
   })
@@ -31,7 +31,6 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   },
 });
-
 
 const verifyToken = async (req, res, next) => {
   const token = req.cookies?.token;
@@ -56,10 +55,9 @@ async function run() {
     const foodCollection = client.db("food-unity").collection("foods");
     const requestCollection = client.db("food-unity").collection("requests");
 
-    // auth related apis 
+    // auth related apis
     app.post("/jwt", async (req, res) => {
       const user = req.body;
-      console.log("user for token", user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: "1h",
       });
@@ -67,23 +65,24 @@ async function run() {
         .cookie("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production" ? true : false,
-          sameSite: process.env.NODE_ENV === "production" ? 'none':'strict',
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
         })
         .send({ success: true });
     });
 
     app.post("/logout", async (req, res) => {
       const user = req.body;
-     
-      res.clearCookie("token", {
-        maxAge: 0,
-        secure: process.env.NODE_ENV === "production" ? true : false,
-        sameSite: process.env.NODE_ENV === "production"? 'none':'strict',
-      }).send({ success: true });
+
+      res
+        .clearCookie("token", {
+          maxAge: 0,
+          secure: process.env.NODE_ENV === "production" ? true : false,
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        })
+        .send({ success: true });
     });
 
-
-    // foods releted apis 
+    // foods releted apis
     // show first six data using limit
     app.get("/first-six", async (req, res) => {
       try {
@@ -98,7 +97,6 @@ async function run() {
     app.get("/foods", async (req, res) => {
       try {
         const sort = req.query.sort === "desc" ? -1 : 1;
-
         let query = {};
         if (req.query?.email) {
           query = { email: req.query.email };
