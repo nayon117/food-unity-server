@@ -11,9 +11,9 @@ const port = process.env.PORT || 5000;
 app.use(
   cors({
     origin: [
-      // "http://localhost:5173",
-      "https://food-unity-client.web.app",
-      "https://food-unity-client.firebaseapp.com"
+      "http://localhost:5173",
+      // "https://food-unity-client.web.app",
+      // "https://food-unity-client.firebaseapp.com"
     ],
     credentials: true,
   })
@@ -198,6 +198,7 @@ async function run() {
           pickupLocation: updateData.pickupLocation,
           expiredDateTime: updateData.expiredDateTime,
           foodStatus: updateData.foodStatus,
+          additionalNotes:updateData.additionalNotes
         },
       };
 
